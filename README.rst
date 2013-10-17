@@ -1,6 +1,11 @@
 Salt States
 -----------
 
+CentOS
+======
+
+Originally forked from  esacteksab/salt-states which works on Ubuntu. Modified to work with CentOS.
+
 
 Overview
 ========
