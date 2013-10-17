@@ -3,12 +3,8 @@ include:
     - nginx
 
 uwsgi: 
-    pip.installed:
-        - pkgs: 
-            uwsgi
-        - require:
-            - pkg: python-dev
-            - pkg: python-pip
+    cmd.run:
+        - name: pip-2.7 install uwsgi
 
 uwsgi-service:
     service.running:
@@ -23,35 +19,35 @@ uwsgi-service:
         - source: salt://uwsgi/uwsgi.conf
         - temlpate: jinja
         - require:
-            - pip: uwsgi
+            - cmd: uwsgi
 
 
 /var/log/uwsgi:
     file:
         - directory
-        - user: www-data
-        - group: www-data
+        - user: nginx
+        - group: nginx
         - makedirs: true
         - require: 
-            - pip: uwsgi
+            - cmd: uwsgi
             - pkg: nginx
 
 /var/log/uwsgi/app:
     file:
         - directory
-        - user: www-data
-        - group: www-data
+        - user: nginx
+        - group: nginx
         - makedirs: true
         - require:
-            - pip: uwsgi
+            - cmd: uwsgi
             - pkg: nginx
 
 /var/log/uwsgi/emperor.log:
     file:
         - managed
-        - user: www-data
-        - group: www-data
+        - user: nginx
+        - group: nginx
         - require:
-            - pip: uwsgi
+            - cmd: uwsgi
             - pkg: nginx
 

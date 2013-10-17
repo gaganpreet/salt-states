@@ -5,13 +5,10 @@ memcached:
         - name: /etc/memcached.conf
         - source: salt://memcache/memcached.conf
     service.running:
-        - enabled: true
+        - enable: true
         - watch: 
             - file: /etc/memcached.conf
 
-
-python-memcache:
-    pkg.installed:
-        - name: python-memcache
-    require:
-        - pkg: memcached
+python-memcached:
+    cmd.run:
+        - name: pip-2.7 install python-memcached
