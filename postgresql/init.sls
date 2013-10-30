@@ -17,7 +17,7 @@ postgresql-9.2:
     service.running:
         - enable: True
         - watch: 
-            - file: /etc/postgresql/9.2/main/pg_hba.conf
+            - file: /var/lib/pgsql/9.2/data/pg_hba.conf
         - require: 
             - pkg: postgresql92-server
 
