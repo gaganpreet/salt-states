@@ -98,7 +98,7 @@ uwsgi-directory:
 nginx-directory:
     file:
         - directory
-        - name: /etc/nginx/sites-enabled/
+        - name: /etc/nginx/conf.d/
         - user: root
         - group: root
         - recurse:
@@ -127,7 +127,7 @@ nginx-conf:
 
 enable-nginx-site:
     file.symlink:
-        - name: /etc/nginx/sites-enabled/project1.conf
+        - name: /etc/nginx/conf.d/project1.conf
         - target: /etc/nginx/sites-available/project1.conf
         - force: false
         - require:

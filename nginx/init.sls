@@ -9,4 +9,4 @@ nginx:
 
 default-nginx:
     file.absent: 
-        - name: /etc/nginx/sites-enabled/default
+        - name: /etc/nginx/conf.d/default.conf
