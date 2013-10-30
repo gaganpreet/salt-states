@@ -1,3 +1,18 @@
+swap:
+    cmd.run:
+        - name: |
+            dd if=/dev/zero of=/swap bs=1024 count=786432
+            mkswap /swap
+            chown root:root /swap
+            chmod 600 /swap
+            swapon /swap
+        - unless: test -e /swap
+
+/etc/fstab:
+    file.append:
+        - text:
+            - "/swap swap swap defaults 0 0"
+
 packages:
     pkg.installed:
         - names:
@@ -9,6 +24,9 @@ packages:
             - git
             - gcc
             - make
+            - libxml2-devel
+            - libxslt-devel
+            - openssl-devel
 
 pip:
     cmd.run:
@@ -18,12 +36,3 @@ virtualenv:
     cmd.run:
         - name: pip-2.7 install virtualenv virtualenvwrapper
         - onlyif: test -e /usr/bin/pip-2.7
-
-/etc/salt/minion:
-    file.append:
-        - text:
-            - "postgres.user: 'postgres'"
-            - "postgres.port: '5432'"
-            - "postgres.host: 'localhost'"
-            - "postgres.pass: ''"
-            - "postgres.db: 'template0'"
