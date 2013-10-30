@@ -10,7 +10,7 @@ djangouser:
         - password: {{ pillar['dbpassword'] }}
         - runas: postgres
         - require:
-            - service: postgresql
+            - service: postgresql-9.2
 
 djangodb:
     postgres_database.present:
@@ -22,14 +22,14 @@ djangodb:
         - owner: {{ pillar['dbuser'] }}
         - runas: postgres
         - require:
-            - postgres_user: djangouser
+            - postgres_user: {{ pillar['dbuser'] }}
 
 project-root:
     file:
         - directory
-        - name: /usr/share/nginx/{{ pillar['path'] }}
-        - user: www-data
-        - group: www-data
+        - name: {{ pillar['project_root'] }}
+        - user: nginx
+        - group: nginx
         - recurse:
             - user
             - group
@@ -42,8 +42,10 @@ project-git:
     git.latest:
         - name: {{ pillar['git'] }}
         - rev: master
-        - target: /usr/share/nginx/{{ pillar['path'] }}/
+        - target: {{ pillar['project_root'] }}
         - force: true
+        - force_checkout: true
+        - user: root
         - require:
             - pkg: git
             - ssh_known_hosts: bitbucket.org
@@ -52,9 +54,9 @@ project-git:
 site-root:
     file:
         - directory
-        - name: /usr/share/nginx/{{ pillar['path'] }}/web_site
-        - user: www-data
-        - group: www-data
+        - name: {{ pillar['site_root'] }}
+        - user: nginx
+        - group: nginx
         - recurse:
             - user
             - group
@@ -62,58 +64,47 @@ site-root:
         - require:
             - file: project-root
 
-/usr/share/nginx/project1/venv:
+{{ pillar['project_root'] }}/venv:
     virtualenv.manage:
-        - requirements: /usr/share/nginx/{{ pillar['path'] }}/requirements.txt
+        - requirements: {{ pillar['project_root'] }}/requirements.txt
         - clear: false
-        - require:
-            - pkg: python-virtualenv
-            - file: project-root
-
-settings-dir:
-    file:
-        - directory
-        - name: /usr/share/nginx/{{ pillar['path'] }}/web_site/conf
-        - user: www-data
-        - group: www-data
-        - recurse:
-            - user
-            - group
-        - mode: 755
-        - makedirs: true
+        - python: /usr/bin/python2.7
+        - env: {'PATH': '/usr/pgsql-9.2/bin/'}
         - require:
             - file: project-root
-
-prod-settings.py:
-    file.managed:
-        - name: /usr/share/nginx/{{ pillar['path'] }}/web_site/conf/prod.py
-        - source: salt://project1/prod.py
-        - template: jinja
-        - require:
-            - file: settings-dir
-
-wsgi:
-    file.managed:
-        - name: /usr/share/nginx/{{ pillar['path'] }}/web_site/wsgi.py
-        - source: salt://project1/wsgi.py
-        - template: jinja
-        - user: www-data
-        - group: www-data
-        - mode: 755
-        - require:
-            - file: site-root
-
 
 uwsgi-app:
     file.managed:
         - name: /etc/uwsgi/apps-available/project1.ini
         - source: salt://project1/web-site.ini
         - template: jinja
-        - user: www-data
-        - group: www-data
+        - user: nginx
+        - group: nginx
         - mode: 755
         - require:
-            - pip: uwsgi 
+            - cmd: uwsgi 
+
+uwsgi-directory:
+    file:
+        - directory
+        - name: /etc/uwsgi/apps-enabled/
+        - user: root
+        - group: root
+        - recurse:
+            - user
+            - group
+        - mode: 755
+
+nginx-directory:
+    file:
+        - directory
+        - name: /etc/nginx/sites-enabled/
+        - user: root
+        - group: root
+        - recurse:
+            - user
+            - group
+        - mode: 755
 
 enable-uwsgi-app:
     file.symlink:
@@ -128,8 +119,8 @@ nginx-conf:
         - name: /etc/nginx/sites-available/project1.conf
         - source: salt://project1/project1.conf
         - template: jinja
-        - user: www-data
-        - group: www-data
+        - user: nginx
+        - group: nginx
         - mode: 755
         - require:
             - pkg: nginx
@@ -141,3 +132,4 @@ enable-nginx-site:
         - force: false
         - require:
             - file: nginx-conf
+
