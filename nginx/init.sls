@@ -2,7 +2,7 @@ include:
     - reqs
 
 nginx:
-    pkg.latest:
+    pkg.installed:
         - name: nginx
     service.running:
         - enable: True
