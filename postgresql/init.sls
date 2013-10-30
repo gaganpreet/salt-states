@@ -1,6 +1,6 @@
 pg_hba.conf:
     file.managed:
-        - name: /etc/postgresql/9.2/main/pg_hba.conf
+        - name: /var/lib/pgsql/9.2/data/pg_hba.conf
         - source: salt://postgresql/pg_hba.conf
         - user: postgres
         - group: postgres
