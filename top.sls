@@ -1,5 +1,6 @@
 base:
     '*':
+        - yum
         - ssh
         - reqs
         - reqs.sym
