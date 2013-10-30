@@ -8,7 +8,7 @@ djangouser:
     postgres_user.present:
         - name: {{ pillar['dbuser'] }}
         - password: {{ pillar['dbpassword'] }}
-        - runas: postgres
+        - user: postgres
         - require:
             - service: postgresql-9.2
 
@@ -20,7 +20,7 @@ djangodb:
         - lc_collate: en_US.UTF8
         - template: template0
         - owner: {{ pillar['dbuser'] }}
-        - runas: postgres
+        - user: postgres
         - require:
             - postgres_user: {{ pillar['dbuser'] }}
 
