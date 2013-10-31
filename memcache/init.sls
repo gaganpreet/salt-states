@@ -2,12 +2,12 @@ memcached:
     pkg.installed:
         - name: memcached
     file.managed:
-        - name: /etc/memcached.conf
-        - source: salt://memcache/memcached.conf
+        - name: /etc/sysconfig/memcached
+        - source: salt://memcache/memcached
     service.running:
         - enable: true
         - watch: 
-            - file: /etc/memcached.conf
+            - file: /etc/sysconfig/memcached
 
 python-memcached:
     cmd.run:
