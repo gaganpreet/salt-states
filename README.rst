@@ -42,3 +42,4 @@ Steps
 * SSH to minion and initdb/restore for postgress. Also restart salt-minion so salt has pg_config in PATH from /etc/init.d/functions
 * Restore project1
 * Restart uwsgi and nginx on minion
+* Optionally restore goodies and iptables
